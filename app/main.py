@@ -1,14 +1,14 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from . import crud, schemas, models
 from .database import engine, SessionLocal
-from sqlalchemy import func
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
- 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,7 +37,6 @@ def avg_prices_by_region_and_month(db: Session = Depends(get_db)):
         func.avg(models.ProductPrice.price).label("price")
     ).group_by(models.ProductPrice.product, models.ProductPrice.region, "date").all()
 
-    # перетворимо в список словників, щоб фронт зрозумів
     return [
         {
             "product": r[0],
@@ -47,3 +46,8 @@ def avg_prices_by_region_and_month(db: Session = Depends(get_db)):
         }
         for r in results
     ]
+
+# Debug route to check how many rows are in the database
+@app.get("/debug-count")
+def debug_count(db: Session = Depends(get_db)):
+    return {"count": db.query(models.ProductPrice).count()}
