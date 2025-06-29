@@ -34,12 +34,8 @@ python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 
 pip install -r requirements.txt
-
-### 3. Load Excel data into the database
-
-python test_loader.py
-
-### 4. Running the API Server
+ 
+### 3. Running the API Server
 
 uvicorn app.main:app --reload
 
